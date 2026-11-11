@@ -1,69 +1,87 @@
-import Image from "next/image";
+'use client';
+
+import { useMemo } from 'react';
+import { ConverterOptions, OutputTarget } from '@/types/converter';
+import { jsonToTypeScript } from '@/lib/converters/typeScript';
+import { jsonToZod } from '@/lib/converters/zod';
+import { Header } from '@/components/Header';
+import { OptionsBar } from '@/components/OptionsBar';
+import { PresetsBar } from '@/components/PresetsBar';
+import { CodeEditor } from '@/components/CodeEditor';
+import { autoFixJson } from '@/lib/utils';
+import { useLocalStorage } from '@/hooks/useLocalStorage';
+
+const DEFAULT_JSON = JSON.stringify(
+  {
+    id: "usr_9921",
+    name: "Alex Rivera",
+    email: "alex@example.com",
+    is_active: true,
+    roles: ["admin", "developer"],
+  },
+  null,
+  2
+);
+
+const DEFAULT_OPTIONS: ConverterOptions = {
+  rootName: 'User',
+  detectFormats: true,
+  useOptional: false,
+  exportZodType: true,
+};
 
 export default function Home() {
+  const [inputJson, setInputJson] = useLocalStorage<string>('json_converter_input', DEFAULT_JSON);
+  const [target, setTarget] = useLocalStorage<OutputTarget>('json_converter_target', 'zod');
+  const [options, setOptions] = useLocalStorage<ConverterOptions>('json_converter_options', DEFAULT_OPTIONS);
+
+  // Real-time Validation & Conversion Engine
+  const { output, error } = useMemo(() => {
+    if (!inputJson.trim()) return { output: '', error: null };
+    try {
+      // 1. Coba parse dengan standard JSON.parse agar jika JSON rusak, error dimunculkan
+      //    sehingga tombol Auto-Fix di UI akan ter-trigger!
+      let parsed: any;
+      try {
+        parsed = JSON.parse(inputJson);
+      } catch {
+        // Jika gagal standard parse, coba parse dengan autoFixJson untuk preview output
+        // namun tetap lempar error agar tombol Auto-Fix muncul
+        parsed = JSON.parse(autoFixJson(inputJson));
+        throw new Error('Invalid JSON format. Klik tombol Auto-Fix untuk merapikan.');
+      }
+
+      let result = '';
+      if (target === 'ts-interface') result = jsonToTypeScript(parsed, options, true);
+      else if (target === 'ts-type') result = jsonToTypeScript(parsed, options, false);
+      else if (target === 'zod') result = jsonToZod(parsed, options);
+
+      return { output: result, error: null };
+    } catch (err: any) {
+      return { output: '', error: err.message };
+    }
+  }, [inputJson, target, options]);
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert h-5 w-[100px]"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
+    <main className="h-screen bg-slate-950 text-slate-100 p-4 sm:p-6 flex flex-col gap-4 w-full overflow-hidden">
+      <Header target={target} setTarget={setTarget} />
+      <OptionsBar options={options} setOptions={setOptions} target={target} />
+      <PresetsBar onSelectPreset={(presetJson) => setInputJson(presetJson)} />
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 flex-1 min-h-0">
+        <CodeEditor
+          label="INPUT JSON"
+          value={inputJson}
+          onChange={setInputJson}
+          error={error}
         />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the{" "}
-            <code className="rounded bg-black/[.06] px-1.5 py-0.5 font-mono text-[0.9em] dark:bg-white/[.08]">
-              page.tsx
-            </code>{" "}
-            file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert h-[14px] w-4"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={14}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
-    </div>
+        <CodeEditor
+          label={`OUTPUT (${target.toUpperCase()})`}
+          value={output}
+          readOnly
+          downloadFileName={`${options.rootName || 'schema'}.${target === 'zod' ? 'ts' : 'd.ts'}`}
+        />
+      </div>
+    </main>
   );
 }

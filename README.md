@@ -1,36 +1,68 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# ⚡ JSON to TypeScript & Zod Schema Converter
 
-## Getting Started
+A lightweight, developer-focused micro-tool designed to instantly convert raw JSON API payloads into **TypeScript Interfaces**, **TypeScript Types**, and **Zod Validation Schemas**. 
 
-First, run the development server:
+Built with 100% client-side privacy, smart format detection, and automated JSON repair mechanisms.
 
+![JSON Converter App Showcase](./public/screenshot.png) <!-- Upload screenshot kamu ke folder /public -->
+
+---
+
+## ✨ Features
+
+- 🔒 **100% Client-Side & Private:** Zero network requests. All parsing and AST generation happen entirely inside your browser.
+- ⚡ **Zod Schema Engine:** Automatically detects special string formats (`email`, `uuid`, `datetime`, `url`) and attaches validation chains (e.g., `z.string().email()`).
+- 🧠 **Smart Array Union Merging:** Intelligently analyzes heterogeneous objects inside arrays and resolves them into unified types with optional property flags.
+- 🧹 **Auto-Fix Broken JSON:** Tolerates unquoted keys, single quotes, trailing commas, and Javascript comments using `JSON5` fallback parsing.
+- 🎨 **IDE-Inspired Split Interface:** High-contrast dark theme, live syntax validation, code formatting (Prettify/Minify), and file export (`.ts`).
+- 💾 **State Persistence:** Automatically syncs your active state and editor preferences using `useSyncExternalStore` and `localStorage`.
+
+---
+
+## 🛠️ Tech Stack
+
+- **Framework:** Next.js 15+ (App Router)
+- **Language:** TypeScript
+- **Styling:** Tailwind CSS
+- **Icons:** Lucide React
+- **Parsing Engine:** Native AST logic & JSON5
+- **Testing:** Vitest
+
+---
+
+## 🚀 Getting Started
+
+### 1. Clone the repository
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+git clone https://github.com/EghoPratama/json-to-schema
+cd json-to-schema
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### 2. Install dependencies
+```bash
+npm install
+```
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### 3. Run development server
+```bash
+npm run dev
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Open [http://localhost:3000](http://localhost:3000) in your browser to view the application.
 
-## Learn More
+---
 
-To learn more about Next.js, take a look at the following resources:
+## 🧪 Running Unit Tests
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+The core conversion engine and UX utilities are fully tested with Vitest.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```bash
+# Run unit tests
+npm run test
+```
 
-## Deploy on Vercel
+---
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## 📄 License
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+MIT © [EghoPratama](https://github.com/EghoPratama)
