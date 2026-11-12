@@ -16,18 +16,22 @@ export const metadata: Metadata = {
   title: 'JSON to Schema Converter — TypeScript & Zod Engine',
   description: 'Fast, client-side JSON to TypeScript Interfaces, Types, and Zod Schemas parser with smart format detection and auto-fix.',
   keywords: ['json to zod', 'json to typescript', 'zod schema generator', 'developer tools', 'frontend utility'],
-  authors: [{ name: 'Your Name' }],
+  authors: [{ name: 'Egho Pratama' }],
   openGraph: {
     title: 'JSON ➔ Schema Converter',
     description: '100% Client-side JSON parser for TypeScript & Zod schemas',
     type: 'website',
     locale: 'en_US',
+    url: 'https://json-to-schema-nine.vercel.app'
   },
   twitter: {
     card: 'summary_large_image',
     title: 'JSON ➔ Schema Converter',
     description: 'Convert JSON responses to TypeScript & Zod schemas instantly.',
   },
+  alternates: {
+    canonical: 'https://json-to-schema-nine.vercel.app'
+  }
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

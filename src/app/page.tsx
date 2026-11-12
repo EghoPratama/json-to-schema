@@ -8,6 +8,7 @@ import { Header } from '@/components/Header';
 import { OptionsBar } from '@/components/OptionsBar';
 import { PresetsBar } from '@/components/PresetsBar';
 import { CodeEditor } from '@/components/CodeEditor';
+import { SeoSection } from '@/components/SeoSection';
 import { autoFixJson } from '@/lib/utils';
 import { useLocalStorage } from '@/hooks/useLocalStorage';
 
@@ -63,25 +64,31 @@ export default function Home() {
   }, [inputJson, target, options]);
 
   return (
-    <main className="h-screen bg-slate-950 text-slate-100 p-4 sm:p-6 flex flex-col gap-4 w-full overflow-hidden">
-      <Header target={target} setTarget={setTarget} />
-      <OptionsBar options={options} setOptions={setOptions} target={target} />
-      <PresetsBar onSelectPreset={(presetJson) => setInputJson(presetJson)} />
+    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col">
+      {/* Viewport 1: Full-Screen IDE Workspace */}
+      <main className="h-screen p-4 sm:p-6 flex flex-col gap-4 w-full overflow-hidden">
+        <Header target={target} setTarget={setTarget} />
+        <OptionsBar options={options} setOptions={setOptions} target={target} />
+        <PresetsBar onSelectPreset={(presetJson) => setInputJson(presetJson)} />
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 flex-1 min-h-0">
-        <CodeEditor
-          label="INPUT JSON"
-          value={inputJson}
-          onChange={setInputJson}
-          error={error}
-        />
-        <CodeEditor
-          label={`OUTPUT (${target.toUpperCase()})`}
-          value={output}
-          readOnly
-          downloadFileName={`${options.rootName || 'schema'}.${target === 'zod' ? 'ts' : 'd.ts'}`}
-        />
-      </div>
-    </main>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 flex-1 min-h-0">
+          <CodeEditor
+            label="INPUT JSON"
+            value={inputJson}
+            onChange={setInputJson}
+            error={error}
+          />
+          <CodeEditor
+            label={`OUTPUT (${target.toUpperCase()})`}
+            value={output}
+            readOnly
+            downloadFileName={`${options.rootName || 'schema'}.${target === 'zod' ? 'ts' : 'd.ts'}`}
+          />
+        </div>
+      </main>
+
+      {/* Viewport 2 (Below the fold): SEO Content & FAQ */}
+      <SeoSection />
+    </div>
   );
 }
